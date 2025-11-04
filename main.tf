@@ -51,7 +51,7 @@ resource "azurerm_storage_container" "newcontainer2" {
 
 # Create MySQL Server 
 resource "azurerm_mysql_flexible_server" "serverformation1" { 
- name    =  "serverformationiac" 
+ name    =  "serverformationiac_hani" 
 location    =  var.location 
 resource_group_name  =  var.rg_name  
 administrator_login   =  "adminformation" 
@@ -74,7 +74,7 @@ resource "azurerm_mysql_flexible_server_configuration" "ssl_config" {
 }
 # Create MySQL database 
 resource "azurerm_mysql_flexible_database" "mysqldb1" { 
- name    =  "mysqldb1-iac" 
+ name    =  "mysqldb1-iac_hani" 
  resource_group_name =  var.rg_name
  server_name   =  azurerm_mysql_flexible_server.serverformation1.name
  charset    =  "utf8" 
@@ -84,7 +84,7 @@ resource "azurerm_mysql_flexible_database" "mysqldb1" {
 
 # Configure firewall to open access 
 resource "azurerm_mysql_flexible_server_firewall_rule" "mysqlfwrule1" { 
- name        =  "mysqlfwrule1-iac" 
+ name        =  "mysqlfwrule1-iac_hani" 
  resource_group_name =  var.rg_name
  server_name     =  azurerm_mysql_flexible_server.serverformation1.name 
   start_ip_address  =  "0.0.0.0"
