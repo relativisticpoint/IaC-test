@@ -1,0 +1,89 @@
+provider "azurerm" {
+  tenant_id  = var.tenant_id
+  subscription_id = var.subscription_id
+
+  # Prevents automatic registration of resource providers
+  resource_provider_registrations = "none"
+
+  features {}
+}
+
+# Create Storage Account
+
+resource "azurerm_storage_account" "sg1" {
+  name                     = "csestoragelogo-hani" # add your name to make it unique. Can only consist of lowercase letters and numbers, and must be between 3 and 24 characters long.
+  resource_group_name      = var.rg_name
+  location                 = var.location
+
+  # Performance tier: Standard (HDD-backed)
+  account_tier             = "Standard"
+
+  # Replication strategy:
+  # LRS = Locally Redundant Storage
+  account_replication_type = "LRS"
+
+  # Allows public access to blobs/containers
+  allow_nested_items_to_be_public = true
+}
+
+# Create a Blob inside the Storage Account
+
+resource "azurerm_storage_container" "newcontainer1" {
+  name                 = "container-logo"
+  storage_account_id   = azurerm_storage_account.sg1.id
+
+  # Access level: "blob" = anonymous read access to blobs only
+  container_access_type = "blob"
+}
+
+# Create Storage Account
+resource "azurerm_storage_account" "sg2" {
+  name                     = "csestoragelogs-hani" # add your name to make it unique. Can only consist of lowercase letters and numbers, and must be between 3 and 24 characters long.
+  resource_group_name      = var.rg_name
+  location                 = var.location
+
+  # Performance tier: Standard (HDD-backed)
+  account_tier             = "Standard"
+
+  # Replication strategy:
+  # LRS = Locally Redundant Storage
+  account_replication_type = "LRS"
+
+  # Allows public access to blobs/containers
+  allow_nested_items_to_be_public = true
+}
+
+# Create a Blob inside the Storage Account
+resource "azurerm_storage_container" "newcontainer2" {
+  name                = "container-logs"
+  storage_account_id  = azurerm_storage_account.sg2.id
+
+  # Access level: "blob" = anonymous read access to blobs only
+  container_access_type = "blob"
+}
+
+# Create MySQL Server
+resource "azurerm_mysql_flexible_server" "serverformation1" {
+  name                   = "serverformationiac"
+  location               = var.location
+  resource_group_name    = var.rg_name
+  administrator_login    = "adminrelativisticp"
+  administrator_password = "formationrelativisticp0!"
+  sku_name               = "B_Standard_B1ms"
+  version                = "8.0.21"
+  geo_redundant_backup_enabled = false
+
+  storage {
+    auto_growth_enabled = false
+    size_gb             = 20
+    io_scaling_enabled  = false
+    iops                = 360
+  }
+}
+
+resource "azurerm_mysql_flexible_server_configuration" "ssl_config" {
+  name                = "require_secure_transport"
+  resource_group_name = var.rg_name
+  server_name         = azurerm_mysql_flexible_server.serverformation1.name
+  value               = "OFF"
+}
